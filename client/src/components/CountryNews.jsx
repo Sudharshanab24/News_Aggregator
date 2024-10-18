@@ -22,14 +22,17 @@ function CountryNews() {
   const pageSize = 6;
 
   useEffect(() => {
-    setIsLoading(true);
-    setError(null);
-    fetch(`https://news-aggregator-dusky.vercel.app/country/${params.iso}?page=${page}&pageSize=${pageSize}`)
+   
+    fetch(`http://localhost:5000/top-headlines/${params.iso}?page=${page}&pageSize=${pageSize}`)
       .then((response) => {
         if (response.ok) {
           return response.json();
         }
-        throw new Error('Network response was not ok');
+        else{
+          console.error(response.statusText);
+          setIsLoading(false);
+          return null;
+        }
       })
       .then((myJson) => {
         if (myJson.success) {

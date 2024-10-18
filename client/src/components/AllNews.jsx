@@ -10,19 +10,23 @@ function AllNews() {
   const [error, setError] = useState(null);
 
   function handlePrev() {
-    setPage(page - 1);
+    if (page > 1) {
+      setPage(page - 1);
+    }
   }
 
   function handleNext() {
-    setPage(page + 1);
+    if (page < 2) {  // Limit to 2 pages
+      setPage(page + 1);
+    }
   }
 
-  let pageSize = 12;
+  let pageSize = 6;  // Number of items per page (6 grids per page)
 
   useEffect(() => {
     setIsLoading(true);
     setError(null);
-    fetch(`https://news-aggregator-dusky.vercel.app/all-news?page=${page}&pageSize=${pageSize}`)
+    fetch(`http://localhost:5000/all-news?page=${page}&pageSize=${pageSize}`)
       .then(response => {
         if (response.ok) {
           return response.json();
@@ -50,7 +54,7 @@ function AllNews() {
     <>
       {error && <div className="text-red-500 mb-4">{error}</div>}
 
-      <div className='my-10 cards grid lg:place-content-center md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 xs:grid-cols-1 xs:gap-4 md:gap-10 lg:gap-14 md:px-16 xs:p-3 '>
+      <div className='my-10 cards grid lg:place-content-center md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 xs:grid-cols-1 xs:gap-4 md:gap-10 lg:gap-14 md:px-16 xs:p-3'>
         {!isLoading ? data.map((element, index) => (
           <EverythingCard
             title={element.title}
@@ -67,8 +71,8 @@ function AllNews() {
       {!isLoading && data.length > 0 && (
         <div className="pagination flex justify-center gap-14 my-10 items-center">
           <button disabled={page <= 1} className='pagination-btn text-center' onClick={handlePrev}>&larr; Prev</button>
-          <p className='font-semibold opacity-80'>{page} of {Math.ceil(totalResults / pageSize)}</p>
-          <button className='pagination-btn text-center' disabled={page >= Math.ceil(totalResults / pageSize)} onClick={handleNext}>Next &rarr;</button>
+          <p className='font-semibold opacity-80'>{page} of 2</p> {/* Limit to 2 pages */}
+          <button className='pagination-btn text-center' disabled={page >= 2} onClick={handleNext}>Next &rarr;</button>
         </div>
       )}
     </>

@@ -1,31 +1,36 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from 'react-router-dom'
-import EverythingCard from './EverythingCard'
+import { useParams } from 'react-router-dom';
+import EverythingCard from './EverythingCard';
 import Loader from "./Loader";
 
 function TopHeadlines() {
   const params = useParams();
   const [data, setData] = useState([]);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(1);  // Start at page 1 and limit to 1 page
   const [totalResults, setTotalResults] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Disable going to a previous page when on page 1
   function handlePrev() {
-    setPage(page - 1);
+    if (page > 1) {
+      setPage(page - 1);
+    }
   }
 
+  // Disable going to the next page since we limit it to 1 page
   function handleNext() {
-    setPage(page + 1);
+    // No increment for page because we limit to 1 page
+    return;
   }
 
-  let pageSize = 6;
+  let pageSize = 12;  // Number of articles to display
 
   useEffect(() => {
     setIsLoading(true);
     setError(null);
     const categoryParam = params.category ? `&category=${params.category}` : "";
-    fetch(`https://news-aggregator-dusky.vercel.app/top-headlines?language=en${categoryParam}&page=${page}&pageSize=${pageSize}`)
+    fetch(`http://localhost:5000/top-headlines?language=en${categoryParam}&page=${page}&pageSize=${pageSize}`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -77,8 +82,8 @@ function TopHeadlines() {
       {!isLoading && data.length > 0 && (
         <div className="pagination flex justify-center gap-14 my-10 items-center">
           <button disabled={page <= 1} className='pagination-btn' onClick={handlePrev}>Prev</button>
-          <p className='font-semibold opacity-80'>{page} of {Math.ceil(totalResults / pageSize)}</p>
-          <button className='pagination-btn' disabled={page >= Math.ceil(totalResults / pageSize)} onClick={handleNext}>Next</button>
+          <p className='font-semibold opacity-80'>1 of 1</p> {/* Only one page */}
+          <button className='pagination-btn' disabled={true} onClick={handleNext}>Next</button> {/* Disable the next button */}
         </div>
       )}
     </>
